@@ -1,7 +1,3 @@
-print("===========================================================");
-print("= Bienvenido al Sistema de Cajero del Comedor de la ETSISI=");
-print("===========================================================");
-
 loadScript("SEGURIDAD.js");
 loadScript("READ WRITE.js");
 loadScript("Config.js");
@@ -15,6 +11,10 @@ var hasCard = false;
 do{
 	try{
 		card = new Card();
+		
+		print("===========================================================");
+		print("= Bienvenido al Sistema de Cajero del Comedor de la ETSISI=");
+		print("===========================================================");
 		
 		//---Acceder a la Tarjeta---//
 		
@@ -73,7 +73,7 @@ do{
 		} while(!input === "6");
 	
 	} catch(error) {
-		print(error.name + ": " + error.message);
+		//print(error.name + ": " + error.message);
 		print("- Esperando por la tarjeta...");
 	}	
 } while(!hasCard);
