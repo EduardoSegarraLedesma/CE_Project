@@ -1,14 +1,12 @@
-var key = new ByteString("Cafeteria_ETSISI", ASCII);
+var key = new ByteString("Cafeteria_ETSISI", ASCII); 
 var crypto;
 
 function generateHASH(message) {
-    var cryptoKey = new Key();  
-    cryptoKey.setComponent(Key.AES, key);  
     crypto = new Crypto();
-    var AES_CMAC = crypto.sign(cryptoKey, Crypto.AES_CMAC, message);
-    return AES_CMAC;
+    var hash = crypto.digest(Crypto.SHA_256, message);
+    return hash;
 }
 
 function checkHASH(message, hash){
-	return generateHASH(message).toString(ASCII) === hash.toString(ASCII);
+    return generateHASH(message).equals(hash);
 }

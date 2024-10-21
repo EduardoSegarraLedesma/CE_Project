@@ -1,12 +1,14 @@
-loadScript("SEGURIDAD.js");
-loadScript("READ WRITE.js");
-loadScript("Config.js");
 loadScript("TRANSACCIONES.js");
+loadScript("READ WRITE.js");
+loadScript("SEGURIDAD.js");
+loadScript("Config.js");
+
 
 //---Bucle de Espera por Tarjeta y Acceso a la misma---//
 
 var card;
 var hasCard = false;
+var input;
 
 do{
 	try{
@@ -18,28 +20,29 @@ do{
 		
 		//---Acceder a la Tarjeta---//
 		
-		//Select
-		var apduSelect = new ByteString("FF A4 00 00 01 06", HEX);
-		var response = card.plainApdu(apduSelect);
+		// Select
+		var apdu = new ByteString("FF A4 00 00 01 06", HEX);
+		var response = card.plainApdu(apdu);
 		print("APDU SELECT_CARD SW: " + card.SW.toString(HEX));
 	
 		// Autenticación: Enviar el APDU PRESENT_PSC (Presentar PIN/PSC)
-		var apduPsc = new ByteString("FF 20 00 00 03 FF FF FF", HEX);
-		response = card.plainApdu(apduPsc);
+		apdu = new ByteString("FF 20 00 00 03 FF FF FF", HEX);
+		response = card.plainApdu(apdu);
 		print("APDU PRESENT_PSC SW: " + card.SW.toString(HEX));
 		
 		hasCard = true;
+
+		writeHASH(card,generateHASH(readAllContent(card)));
 		
 		//---Comprobar por modificaciones---//
 
 		if(!checkHASH(readAllContent(card),readHASH(card))){
-			print("La tarjeta ha sido modificada ilegalmente y no se acepta");
+			print("* La tarjeta ha sido modificada ilegalmente y no se acepta *");
+			hasCard = false;
 			throw new Error("Tarjeta Ilegal");
 		}
 
 		//---Hacer uso de las funcionalidades de la tarjeta---//
-
-		var input;
 
 		do {
 			print("============");
@@ -53,7 +56,6 @@ do{
 			print("6 - Meter otra tarjeta");
 			
 			input = getOption();
-			input = prompt("Introduce el numero de la opcion: ");
 			
 			print("Introduce el numero de la opcion:.. " + input)
 			
@@ -71,9 +73,8 @@ do{
 			}
 			
 		} while(!input === "6");
-	
 	} catch(error) {
-		//print(error.name + ": " + error.message);
+		print(error.name + ": " + error.message);
 		print("- Esperando por la tarjeta...");
 	}	
 } while(!hasCard);

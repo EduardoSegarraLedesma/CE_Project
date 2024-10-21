@@ -9,7 +9,8 @@ OPCIONES:
 	5 - Anadir Saldo
 	6 - Salir (exit)
 */
-var moneyToAdd = 20;
+var money = [20,5,15,50,100];
+var moneyCounter = 0;
 
 function getOption() {
 	var aux = option[optionCounter];
@@ -18,5 +19,7 @@ function getOption() {
 }
 	
 function getMoneyToAdd(){
-	return moneyToAdd;
+	var aux = money[optionCounter];
+	moneyCounter++;
+	return aux;
 }
