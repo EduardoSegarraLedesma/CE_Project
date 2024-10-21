@@ -1,18 +1,15 @@
-var ReadData;
-var WriteData;
-
 function readAllContent(card){
 	//Leer Todo - Desde 00, 224 Bytes
 	return read(card, "00 E0");
 }
 
 function readOwner(card){
-	//Leer usuario - Desde 30-60, 48 Bytes
-	return formatByteString(read(card, "70 30"));
+	//Leer usuario - Desde 70, 48 Bytes
+	return  byteStringToFormattedString(read(card, "70 30"));
 }
 
 function readBalance(card){
-	//Leer saldo - Desde 80, 8 Bytes
+	//Leer saldo - Desde B0, 8 Bytes
 	return parseFloat(read(card, "B0 08").bytes(00, 8).toString(ASCII));
 }
 
@@ -22,9 +19,7 @@ function readHASH(card){
 }
 
 function read(card, dir){
-	ReadData  = card.plainApdu(new ByteString("FF B0 00 "+dir, HEX));
-	//print("APDU READ_CARD SW: " + card.SW.toString(HEX));
-	return ReadData;
+	return card.plainApdu(new ByteString("FF B0 00 "+dir, HEX));
 }
 
 function writeHASH(card, hash){
@@ -32,16 +27,14 @@ function writeHASH(card, hash){
 }
 
 function writeBalance(card, balance){
-	write(card,"B0", "08",asciiToByteString(balance));
+	write(card,"B0", "08",numberToFormattedByteString(balance));
 }
 
 function write(card, dir, long, message){
     while (message.size < parseInt(long, 16)) {
         message = message.concat(new ByteString("2A", HEX));
     }
-
-    WriteData = card.plainApdu(new ByteString("FF D0 00 " + dir + " " + long + " " + message, HEX));
-    //print("APDU WRITE_CARD SW: " + card.SW.toString(HEX));
+    card.plainApdu(new ByteString("FF D0 00 " + dir + " " + long + " " + message, HEX));
 }
 
 //---------------Funciones Auxiliares---------------//
@@ -50,10 +43,12 @@ function asciiToByteString(str) {
     return new ByteString(str, ASCII);
 }
 
-function formatByteString(byteStr) {
-    var str = byteStr.toString(ASCII);
-    var formattedStr = str.replace(/\*+/g, ',').replace(/,+$/, '');
-    return formattedStr;
+function numberToFormattedByteString(num) {
+    return new ByteString(num.toFixed(2).padStart(8, '0'), ASCII);
+}
+
+function byteStringToFormattedString(byteStr) {
+    return byteStr.toString(ASCII).replace(/\*+/g, ',').replace(/,+$/, '');
 }
 
 function writeNewUser(card,surname1,surname2,name){
