@@ -1,4 +1,5 @@
-var ReadResponse;
+var ReadData;
+var WriteData;
 
 function readAllContent(card){
 	//Leer Todo - Desde 00, 224 Bytes
@@ -7,12 +8,12 @@ function readAllContent(card){
 
 function readOwner(card){
 	//Leer usuario - Desde 30-60, 48 Bytes
-	return read(card, "30 30");
+	return formatByteString(read(card, "70 30"));
 }
 
 function readBalance(card){
 	//Leer saldo - Desde 80, 8 Bytes
-	return read(card, "80 08").bytes(00, 8).toString(ASCII);
+	return parseFloat(read(card, "B0 08").bytes(00, 8).toString(ASCII));
 }
 
 function readHASH(card){
@@ -21,15 +22,13 @@ function readHASH(card){
 }
 
 function read(card, dir){
-	ReadResponse  = card.plainApdu(new ByteString("FF B0 00 "+dir, HEX));
-	print("APDU READ_CARD SW: " + card.SW.toString(HEX));
-	print(ReadResponse);
-	return ReadResponse;
+	ReadData  = card.plainApdu(new ByteString("FF B0 00 "+dir, HEX));
+	//print("APDU READ_CARD SW: " + card.SW.toString(HEX));
+	return ReadData;
 }
 
 function writeHASH(card, hash){
-	write(card,"E0", "10",hash.bytes(0, 16));
-	write(card,"F0", "10",hash.bytes(16, 16))
+	write(card,"E0", "20",hash);
 }
 
 function writeBalance(card, balance){
@@ -37,19 +36,24 @@ function writeBalance(card, balance){
 }
 
 function write(card, dir, long, message){
-	 
-    while (message.length < parseInt(long, 16)) {
+    while (message.size < parseInt(long, 16)) {
         message = message.concat(new ByteString("2A", HEX));
     }
 
-    var card_data = card.plainApdu(new ByteString("FF D0 00 " + dir + " " + long + " " + message.toString(HEX), HEX));
-    print("APDU WRITE_CARD SW: " + card.SW.toString(HEX));
+    WriteData = card.plainApdu(new ByteString("FF D0 00 " + dir + " " + long + " " + message, HEX));
+    //print("APDU WRITE_CARD SW: " + card.SW.toString(HEX));
 }
 
 //---------------Funciones Auxiliares---------------//
 
 function asciiToByteString(str) {
     return new ByteString(str, ASCII);
+}
+
+function formatByteString(byteStr) {
+    var str = byteStr.toString(ASCII);
+    var formattedStr = str.replace(/\*+/g, ',').replace(/,+$/, '');
+    return formattedStr;
 }
 
 function writeNewUser(card,surname1,surname2,name){
@@ -62,5 +66,5 @@ function writeNewUser(card,surname1,surname2,name){
 	write(card,"80", "10",asciiToByteString(surname2.toUpperCase()));
 	write(card,"90", "10",name.toUpperCase());
 	write(card,"A0", "10",asciiToByteString("----SALDO-------"));
-	writeBalance(card, "00000,00")
+	writeBalance(card, "00000.00")
 }
