@@ -6,11 +6,14 @@ loadScript("Config.js");
 
 //---Bucle de Espera por Tarjeta y Acceso a la misma---//
 
+var hasCard = false;
 var card;
-var input;
 var apdu;
 var response;
+var input;
+var money;
 
+do{
 	try{
 		card = new Card();
 		
@@ -32,30 +35,36 @@ var response;
 		
 		print("- Se ha accedido a la tarjeta");
 		
+		hasCard=true
+		
 		//---Comprobar por Modificaciones Ilegales---//
 
 		if(!checkHASH(readAllContent(card),readHASH(card))){
 			print("*** La tarjeta ha sido modificada ilegalmente y no se acepta ***");
+			hasCard=false;
 			throw new Error("Tarjeta Ilegal");
 		}
 		
 		//---Ver los datos del Usuario---//
 		
-		print("Usuario: "+ readOwner(card));
-		print("Saldo: "+ readBalance(card)+" €")
+		print("Dueno: "+ readOwner(card));
+		print("Saldo: "+ readBalance(card));
 
 		//---Hacer uso de las funcionalidades de la tarjeta---//
 
 		do {
+			
+			
+			
 			print("============");
 			print("= OPCIONES =");
 			print("============");
-			print("1 - Comprar Menu Completo con Bebida - 7.40 €");
-			print("2 - Comprar Menu Completo Sin Bebida - 6.80 €");
-			print("3 - Comprar Menu Medio con Bebida - 6.00 €");
-			print("4 - Comprar Menu Medio sin Bebida - 5.40 €");
+			print("1 - Comprar Menu Completo con Bebida - 7.40 ");
+			print("2 - Comprar Menu Completo Sin Bebida - 6.80 ");
+			print("3 - Comprar Menu Medio con Bebida - 6.00 ");
+			print("4 - Comprar Menu Medio sin Bebida - 5.40 ");
 			print("5 - Anadir Saldo");
-			print("6 - Meter otra tarjeta");
+			print("6 - Salir");
 			
 			input = getOption();
 			
@@ -64,27 +73,38 @@ var response;
 			switch(input){
 			case "1":
 				buyMenu(card, 7.40);
+				print("Saldo Restante: "+ readBalance(card));
 				break;
 			case "2":
 				buyMenu(card, 6.80);
+				print("Saldo Restante: "+ readBalance(card));
 				break;
 			case "3":
 				buyMenu(card, 6.00);
+				print("Saldo Restante: "+ readBalance(card));
 				break;
 			case "4":
 				buyMenu(card, 5.40);
+				print("Saldo Restante: "+ readBalance(card));
 				break;
 			case "5":
-				addBalance(card, getMoneyToAdd());
+				money = getMoneyToAdd();
+				print("Introduzca cuanto saldo quiere anadir: "+ money)
+				addBalance(card, money );
+				print("Nuevo Saldo: "+ readBalance(card));
 				break;
 			}
 			
 		} while(!input.equals("6"));
+		
 		print("-- Gracias por comprar en el comedor de la ETSISI --");
+		
 	} catch(error) {
-		print(error.name + ": " + error.message);
+		//print(error.name + ": " + error.message);
 		print("- Esperando por la tarjeta...");
 	}	
+}while(!hasCard);
+
 //---------------Funciones Auxiliares---------------//
 
 function loadScript(scriptName) {

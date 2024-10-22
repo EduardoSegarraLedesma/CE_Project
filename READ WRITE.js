@@ -44,7 +44,12 @@ function asciiToByteString(str) {
 }
 
 function numberToFormattedByteString(num) {
-    return new ByteString(num.toFixed(2).padStart(8, '0'), ASCII);
+	num = num.toFixed(2).toString();
+	var aux;
+	while(num.length < 8){
+		num = "0"+num;
+	}
+    return new ByteString(num, ASCII);
 }
 
 function byteStringToFormattedString(byteStr) {
