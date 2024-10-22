@@ -26,12 +26,12 @@ do{
 		// -Select
 		apdu = new ByteString("FF A4 00 00 01 06", HEX);
 		response = card.plainApdu(apdu);
-		//print("APDU SELECT_CARD SW: " + card.SW.toString(HEX));
+		print("APDU SELECT_CARD SW: " + card.SW.toString(HEX));
 	
 		// -Autenticacion
 		apdu = new ByteString("FF 20 00 00 03 FF FF FF", HEX);
 		response = card.plainApdu(apdu);
-		//print("APDU PRESENT_PSC SW: " + card.SW.toString(HEX));
+		print("APDU PRESENT_PSC SW: " + card.SW.toString(HEX));
 		
 		print("- Se ha accedido a la tarjeta");
 		
@@ -53,8 +53,6 @@ do{
 		//---Hacer uso de las funcionalidades de la tarjeta---//
 
 		do {
-			
-			
 			
 			print("============");
 			print("= OPCIONES =");

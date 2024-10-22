@@ -1,3 +1,5 @@
+var ReadResponse;
+
 function readAllContent(card){
 	//Leer Todo - Desde 00, 224 Bytes
 	return read(card, "00 E0");
@@ -19,7 +21,9 @@ function readHASH(card){
 }
 
 function read(card, dir){
-	return card.plainApdu(new ByteString("FF B0 00 "+dir, HEX));
+	ReadResponse = card.plainApdu(new ByteString("FF B0 00 "+dir, HEX));
+	print("APDU READ_CARD SW: " + card.SW.toString(HEX));
+	return ReadResponse;
 }
 
 function writeHASH(card, hash){
@@ -35,6 +39,7 @@ function write(card, dir, long, message){
         message = message.concat(new ByteString("2A", HEX));
     }
     card.plainApdu(new ByteString("FF D0 00 " + dir + " " + long + " " + message, HEX));
+    print("APDU WRITE_CARD SW: " + card.SW.toString(HEX));
 }
 
 //---------------Funciones Auxiliares---------------//
