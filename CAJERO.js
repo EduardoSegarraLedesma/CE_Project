@@ -41,7 +41,6 @@ do{
 
 		if(!checkHASH(readAllContent(card),readHASH(card))){
 			print("*** La tarjeta ha sido modificada ilegalmente y no se acepta ***");
-			hasCard=false;
 			throw new Error("Tarjeta Ilegal");
 		}
 		

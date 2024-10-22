@@ -1,4 +1,4 @@
-var option = ["1","5","6"];
+var option = ["2","5","6"];
 var optionCounter = 0;
 /*  OPCIONES:
 	1 - Comprar Menu Completo con Bebida
