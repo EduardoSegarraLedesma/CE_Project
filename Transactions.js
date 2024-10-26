@@ -1,27 +1,22 @@
-loadScript("READ WRITE.js");
-loadScript("SEGURIDAD.js");
-
+loadScript("CardDataManager.js");
 
 function buyMenu(card, cost){
 	var balance = readBalance(card);
 	if(balance>=cost){
 		writeBalance(card,balance-cost);
-		updateHASH(card);
+		writeCMAC(card);
+		print("Saldo Restante: "+ readBalance(card));
 	} else {
-		print("*** Saldo Insuficiente ***")
+		print("*** Saldo Insuficiente ***");
 	}
 }
 
 function addBalance(card, money){
 	writeBalance(card,readBalance(card)+money);
-	updateHASH(card);
+	writeCMAC(card);
 }
 
 //---------------Funciones Auxiliares---------------//
-
-function updateHASH(card){
-	writeHASH(card,generateHASH(readAllContent(card)));
-}
 
 function loadScript(scriptName) {
     var scriptContent = load(scriptName);

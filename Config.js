@@ -1,3 +1,5 @@
+//Simulacion de Input Manual
+
 var option = ["2","5","6"];
 var optionCounter = 0;
 /*  OPCIONES:

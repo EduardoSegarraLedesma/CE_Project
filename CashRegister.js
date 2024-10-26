@@ -1,6 +1,6 @@
-loadScript("TRANSACCIONES.js");
-loadScript("READ WRITE.js");
-loadScript("SEGURIDAD.js");
+loadScript("Transactions.js");
+loadScript("CardDataManager.js");
+loadScript("Security.js");
 loadScript("Config.js");
 
 
@@ -8,8 +8,6 @@ loadScript("Config.js");
 
 var hasCard = false;
 var card;
-var apdu;
-var response;
 var input;
 var money;
 
@@ -23,36 +21,30 @@ do{
 		
 		//---Acceder a la Tarjeta---//
 		
-		// -Select
-		apdu = new ByteString("FF A4 00 00 01 06", HEX);
-		response = card.plainApdu(apdu);
-		print("APDU SELECT_CARD SW: " + card.SW.toString(HEX));
-	
-		// -Autenticacion
-		apdu = new ByteString("FF 20 00 00 03 FF FF FF", HEX);
-		response = card.plainApdu(apdu);
-		print("APDU PRESENT_PSC SW: " + card.SW.toString(HEX));
+		selectCard(card);
+		presentPSC(card);
 		
-		print("- Se ha accedido a la tarjeta");
+		print("- Se ha accedido a la tarjeta ...");
 		
 		hasCard=true
-		
+				
 		//---Comprobar por Modificaciones Ilegales---//
 
-		if(!checkHASH(readAllContent(card),readHASH(card))){
+		if(!checkCMAC(readAllContent(card),readCMAC(card))){
 			print("*** La tarjeta ha sido modificada ilegalmente y no se acepta ***");
 			throw new Error("Tarjeta Ilegal");
+		} else {
+			print("- La tarjeta es segura ...");
 		}
 		
 		//---Ver los datos del Usuario---//
-		
+				
 		print("Dueno: "+ readOwner(card));
 		print("Saldo: "+ readBalance(card));
 
 		//---Hacer uso de las funcionalidades de la tarjeta---//
 
 		do {
-			
 			print("============");
 			print("= OPCIONES =");
 			print("============");
@@ -70,24 +62,21 @@ do{
 			switch(input){
 			case "1":
 				buyMenu(card, 7.40);
-				print("Saldo Restante: "+ readBalance(card));
 				break;
 			case "2":
 				buyMenu(card, 6.80);
-				print("Saldo Restante: "+ readBalance(card));
 				break;
 			case "3":
 				buyMenu(card, 6.00);
-				print("Saldo Restante: "+ readBalance(card));
 				break;
 			case "4":
 				buyMenu(card, 5.40);
-				print("Saldo Restante: "+ readBalance(card));
+				
 				break;
 			case "5":
 				money = getMoneyToAdd();
 				print("Introduzca cuanto saldo quiere anadir: "+ money)
-				addBalance(card, money );
+				addBalance(card, money);
 				print("Nuevo Saldo: "+ readBalance(card));
 				break;
 			}
